@@ -3,10 +3,60 @@ title: "Assignment - 2 new"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r}
 library(rio)
-read_xlsx("UOF")
-names("UOF")
+UOF=import("UOF.XLSX")
 ```
 
+```{r}
+table(UOF$Precinct)
+```
 
+```{r}
+names(UOF)
+
+#checking data types
+str(UOF,width = 50,strict.width='cut')
+
+#Contingency table of counts
+(PrecinctIncident_Type=table(UOF$Precinct,UOF$Incident_Type))
+
+# computing marginal percent (per column) from contingency table
+(PrecintIncident_Type_mgCol=prop.table(PrecinctIncident_Type,
+                            margin = 2)%>%round(.,3))
+
+
+
+#Making a dataframe
+PrecinctIncident_TypeDF=as.data.frame(PrecinctIncident_Type)
+names(PrecinctIncident_TypeDF)=c("precint","Incident_Type","counts")
+
+#adding marginal percents:
+PrecinctIncident_TypeDF$pctCol=as.data.frame(PrecintIncident_Type_mgCol)[,3]
+
+PrecinctIncident_TypeDF
+
+
+library(ggplot2)
+base1=ggplot(data=PrecinctIncident_TypeDF, 
+             aes(x=Incident_Type, y=pctCol,
+                 fill=precint)) # fill brings a legend
+barDodge= base1 +  geom_bar(stat="identity",
+                            position ='dodge') 
+barDodge 
+
+barStacked = base1 + geom_bar(stat = "identity",
+                              position = 'stack')#default
+barStacked 
+
+library(scales)
+barStacked= barStacked + geom_text(size = 5,# check below:
+                             position = position_stack(vjust = 0.5),# center
+                             aes(label=percent(pctCol,accuracy = 0.1)))# percent format
+
+barStacked = barStacked + scale_y_continuous(labels = scales::percent)
+
+barStacked
+
+
+```

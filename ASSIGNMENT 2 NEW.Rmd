@@ -1,0 +1,12 @@
+---
+title: "Assignment - 2 new"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(rio)
+read_xlsx("UOF")
+names("UOF")
+```
+
+
